@@ -25,4 +25,12 @@ export class CartProductService {
     findAllByCart(cart:Cart){
         return this.cartProductRepository.findAllByCart(cart);
     }
+
+    findAllByCartJoinProduct(cart:Cart){
+        return this.cartProductRepository.findAllByCartJoinProduct(cart);
+    }
+
+    findOneByCartAndProduct(cart:Cart , product:Product){
+        return this.cartProductRepository.findOneByCartAndProduct(cart , product);
+    }
 }

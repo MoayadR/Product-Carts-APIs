@@ -19,7 +19,4 @@ export class CartService {
         return this.cartRepository.findOne(id);
     }
 
-    delete(id:number){
-        return this.cartRepository.delete(id);
-    }
 }

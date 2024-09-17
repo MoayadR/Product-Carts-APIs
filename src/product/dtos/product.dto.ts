@@ -10,9 +10,5 @@ export class ProductDto{
     @IsNumberString()
     price:string
 
-    @IsNotEmpty()
-    @IsNumberString()
-    quantity:string
-
     salePrice?:string|null
 }

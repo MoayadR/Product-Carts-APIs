@@ -1,4 +1,5 @@
-import { BadRequestException, Controller, Get, NotFoundException, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { BadRequestException, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { shippingFee, taxRate } from 'src/cart/constants/taxes';
 import { CartProductService } from 'src/cart/services/cart-product/cart-product.service';
 import { CartService } from 'src/cart/services/cart/cart.service';
 import { ProductService } from 'src/product/services/product/product.service';
@@ -43,7 +44,7 @@ export class CartController {
 
         await this.cartProductService.create(product , cart , quantity);
 
-        return await this.cartProductService.findAllByCart(cart);
+        return await this.cartProductService.findAllByCartJoinProduct(cart);
     }
 
     @Post(':cartID/products/:productID?')
@@ -61,6 +62,54 @@ export class CartController {
         existingCartProduct.quantity = quantity; // here it's and update not addition
         await this.cartProductService.update(existingCartProduct);
 
-        return await this.cartProductService.findAllByCart(cart);
+        return await this.cartProductService.findAllByCartJoinProduct(cart);
+    }
+
+    @Delete(':cartID/products/:productID')
+    async deleteProductFromCart(@Param('cartID',ParseIntPipe) cartID:number , @Param('productID' , ParseIntPipe) productID:number){
+        const cart = await this.cartService.findOne(cartID);
+        if(!cart) throw new NotFoundException("The Cart Doesn't Exist!");
+
+        const product = await this.productService.findOne(productID);
+        if(!product) throw new NotFoundException("The Product Doesn't Exist!");
+
+        const cartProductItem = await this.cartProductService.findOneByCartAndProduct(cart , product);
+        
+        if(!cartProductItem) throw new NotFoundException("The Product is not in the Cart!");
+
+        return this.cartProductService.delete(cartProductItem.id);
+    }
+
+    @Get(':id/products')
+    async getCartProductsInCart(@Param('id' , ParseIntPipe) id:number){
+        const cart = await this.cartService.findOne(id);
+        if(!cart) throw new NotFoundException("The Cart Doesn't Exist!");
+
+        return await this.cartProductService.findAllByCartJoinProduct(cart);
+    }
+
+    @Get(':id/pricing')
+    async getPricing(@Param('id' , ParseIntPipe) id:number){
+        const cart = await this.cartService.findOne(id);
+        if(!cart) throw new NotFoundException("The Cart Doesn't Exist!");
+
+        const cartItems = await this.cartProductService.findAllByCartJoinProduct(cart);
+        
+        
+        let subtotal = 0;
+        cartItems.forEach((item)=>{
+            const price = item.product.salePrice || item.product.price;
+            
+            subtotal += (price * item.quantity);
+        })
+
+        const taxAmount = subtotal * taxRate;
+
+        const total = subtotal + taxAmount + shippingFee;
+
+        return {
+            "Subtotal":subtotal,
+            "Total": total
+        }
     }
 }

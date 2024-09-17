@@ -14,4 +14,7 @@ export interface ICartProductRepository{
 
     findAllByCart(cart:Cart):Promise<CartProduct[]>
 
+    findAllByCartJoinProduct(cart:Cart):Promise<CartProduct[]>
+
+    findOneByCartAndProduct(cart:Cart , product:Product):Promise<CartProduct>
 }

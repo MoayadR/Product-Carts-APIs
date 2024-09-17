@@ -14,9 +14,6 @@ export class Product{
     @Column({nullable:false})
     image:string
 
-    @Column({nullable:false})
-    quantity:number
-
     @Column({name:"sale_price" ,nullable:true})
     salePrice:number
 }

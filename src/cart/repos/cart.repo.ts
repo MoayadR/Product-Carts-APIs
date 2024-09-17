@@ -1,4 +1,4 @@
-import { DeleteResult, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { Cart } from "../entities/cart.entity";
 import { ICartRepository } from "../interfaces/cart.interface";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -19,10 +19,6 @@ export class CartRepository implements ICartRepository {
 
     findOne(id: number): Promise<Cart> {
         return this.cartRepository.findOne({where:{id:id}});
-    }
-
-    delete(id: number): Promise<DeleteResult> {
-        return this.cartRepository.delete(id);
     }
 
 }

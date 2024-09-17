@@ -33,7 +33,6 @@ export class ProductService {
         product.image = productValidator.image;
         product.name = productValidator.name;
         product.price = productValidator.price;
-        product.quantity = productValidator.quantity;
         product.salePrice = productValidator.salePrice
     }
 }
