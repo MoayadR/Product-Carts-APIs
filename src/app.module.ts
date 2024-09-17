@@ -8,13 +8,14 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { CartModule } from './cart/cart.module';
 import { Cart } from './cart/entities/cart.entity';
+import { CartProduct } from './cart/entities/cart-product';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type:'sqlite',
       database:`${__dirname}/../database/products_carts.db`,
-      entities:[Product, Cart],
+      entities:[Product, Cart , CartProduct],
       synchronize:true,
     }),
     ServeStaticModule.forRoot({

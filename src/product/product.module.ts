@@ -9,6 +9,7 @@ import { ProductRepository } from './repos/product.repo';
 @Module({
   imports:[TypeOrmModule.forFeature([Product])],
   providers: [ProductService , {provide:IProductRepoToken , useClass:ProductRepository}],
-  controllers: [ProductController]
+  controllers: [ProductController],
+  exports:[ProductService , {provide:IProductRepoToken , useClass:ProductRepository}],
 })
 export class ProductModule {}
