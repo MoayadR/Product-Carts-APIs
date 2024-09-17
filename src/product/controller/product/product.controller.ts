@@ -7,11 +7,13 @@ import { v4 as uuidv4 } from 'uuid'; // for unique file naming
 import * as path from 'path';
 import { IMAGE_MAX_SIZE, imageEndpoint } from 'src/product/constants/image';
 import { ProductValidator } from 'src/product/validators/productValidator';
+import { CartProductService } from 'src/cart/services/cart-product/cart-product.service';
 
 @Controller('products')
 export class ProductController {
     constructor(
-        private readonly productService:ProductService
+        private readonly productService:ProductService,
+        private readonly cartProductService:CartProductService
     ){}
 
     @Post('')
@@ -112,8 +114,13 @@ export class ProductController {
     async delete(@Param('id' , ParseIntPipe) id:number ){
         
         const product = await this.productService.findOne(id);
-
         if(!product) throw new NotFoundException("Product Doesn't Exist");
+
+        // make sure that the product is not in the cart
+        const cartProductList = await this.cartProductService.findAllByProduct(product);
+        cartProductList.forEach(async (item)=>{
+            await this.cartProductService.delete(item.id);
+        })
 
         return await this.productService.delete(id)
     }

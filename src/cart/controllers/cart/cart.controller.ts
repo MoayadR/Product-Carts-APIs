@@ -4,7 +4,7 @@ import { CartProductService } from 'src/cart/services/cart-product/cart-product.
 import { CartService } from 'src/cart/services/cart/cart.service';
 import { ProductService } from 'src/product/services/product/product.service';
 
-@Controller('carts')
+@Controller('cart')
 export class CartController {
     constructor(
         private readonly cartService:CartService,
@@ -14,6 +14,9 @@ export class CartController {
 
     @Post('')
     async create(){
+        const cart = await this.cartService.find();
+        if (cart.length) throw new BadRequestException("Only one instance of the cart can be created!");
+
         return await this.cartService.create();
     }
 
@@ -22,12 +25,14 @@ export class CartController {
         return await this.cartService.find();
     }
 
-    @Post(':cartID/products/:productID?')
-    async addProductToCart(@Param('cartID',ParseIntPipe) cartID:number , @Param('productID' , ParseIntPipe) productID:number , @Query('quantity' , ParseIntPipe) quantity){
+    @Post('products/:productID?')
+    async addProductToCart(@Param('productID' , ParseIntPipe) productID:number , @Query('quantity' , ParseIntPipe) quantity){
         if (quantity <=0) throw new BadRequestException("Quantity cannot be less than or equal to zero");
 
-        const cart = await this.cartService.findOne(cartID);
-        if(!cart) throw new NotFoundException("The Cart Doesn't Exist!");
+        const cartList = await this.cartService.find(); // getting the only cart 
+        if(!cartList.length) throw new NotFoundException("The Cart Doesn't Exist!");
+        
+        const cart = cartList[0];
 
         const cartItems = await this.cartProductService.findAllByCart(cart);
         
@@ -47,12 +52,14 @@ export class CartController {
         return await this.cartProductService.findAllByCartJoinProduct(cart);
     }
 
-    @Post(':cartID/products/:productID?')
-    async updateProductQuantity(@Param('cartID',ParseIntPipe) cartID:number , @Param('productID' , ParseIntPipe) productID:number , @Query('quantity' , ParseIntPipe) quantity){
+    @Post('products/:productID?')
+    async updateProductQuantity(@Param('productID' , ParseIntPipe) productID:number , @Query('quantity' , ParseIntPipe) quantity){
         if (quantity <=0) throw new BadRequestException("Quantity cannot be less than or equal to zero");
 
-        const cart = await this.cartService.findOne(cartID);
-        if(!cart) throw new NotFoundException("The Cart Doesn't Exist!");
+        const cartList = await this.cartService.find(); // getting the only cart 
+        if(!cartList.length) throw new NotFoundException("The Cart Doesn't Exist!");
+        
+        const cart = cartList[0];
 
         const cartItems = await this.cartProductService.findAllByCart(cart);
 
@@ -65,10 +72,12 @@ export class CartController {
         return await this.cartProductService.findAllByCartJoinProduct(cart);
     }
 
-    @Delete(':cartID/products/:productID')
-    async deleteProductFromCart(@Param('cartID',ParseIntPipe) cartID:number , @Param('productID' , ParseIntPipe) productID:number){
-        const cart = await this.cartService.findOne(cartID);
-        if(!cart) throw new NotFoundException("The Cart Doesn't Exist!");
+    @Delete('products/:productID')
+    async deleteProductFromCart(@Param('productID' , ParseIntPipe) productID:number){
+        const cartList = await this.cartService.find(); // getting the only cart 
+        if(!cartList.length) throw new NotFoundException("The Cart Doesn't Exist!");
+        
+        const cart = cartList[0];
 
         const product = await this.productService.findOne(productID);
         if(!product) throw new NotFoundException("The Product Doesn't Exist!");
@@ -80,19 +89,23 @@ export class CartController {
         return this.cartProductService.delete(cartProductItem.id);
     }
 
-    @Get(':id/products')
-    async getCartProductsInCart(@Param('id' , ParseIntPipe) id:number){
-        const cart = await this.cartService.findOne(id);
-        if(!cart) throw new NotFoundException("The Cart Doesn't Exist!");
+    @Get('products')
+    async getCartProductsInCart(){
+        const cartList = await this.cartService.find();
+        if(!cartList.length) throw new NotFoundException("The Cart Doesn't Exist!");
+
+        const cart = cartList[0];
 
         return await this.cartProductService.findAllByCartJoinProduct(cart);
     }
 
-    @Get(':id/pricing')
-    async getPricing(@Param('id' , ParseIntPipe) id:number){
-        const cart = await this.cartService.findOne(id);
-        if(!cart) throw new NotFoundException("The Cart Doesn't Exist!");
+    @Get('pricing')
+    async getPricing(){
 
+        const cartList = await this.cartService.find();
+        if(!cartList.length) throw new NotFoundException("The Cart Doesn't Exist!");
+
+        const cart = cartList[0];
         const cartItems = await this.cartProductService.findAllByCartJoinProduct(cart);
         
         

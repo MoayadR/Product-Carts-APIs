@@ -10,6 +10,10 @@ export class CartProductsRepository implements ICartProductRepository{
        @InjectRepository(CartProduct) private readonly cartProductsRepository:Repository<CartProduct> 
     ){}
 
+    findAllByProduct(product: Product): Promise<CartProduct[]> {
+        return this.cartProductsRepository.find({where:{product:product}});
+    }
+
     findAllByCartJoinProduct(cart: Cart): Promise<CartProduct[]> {
         return this.cartProductsRepository.find({where:{cart:cart} , relations:{product:true}});
     }

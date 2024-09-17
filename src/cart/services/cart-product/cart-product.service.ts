@@ -26,6 +26,10 @@ export class CartProductService {
         return this.cartProductRepository.findAllByCart(cart);
     }
 
+    findAllByProduct(product:Product){
+        return this.cartProductRepository.findAllByProduct(product);
+    }
+
     findAllByCartJoinProduct(cart:Cart){
         return this.cartProductRepository.findAllByCartJoinProduct(cart);
     }

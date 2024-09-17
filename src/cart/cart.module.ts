@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { CartService } from './services/cart/cart.service';
 import { CartController } from './controllers/cart/cart.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -12,13 +12,18 @@ import { ICartProductRepoToken } from './interfaces/cart-product.interface';
 import { ProductModule } from 'src/product/product.module';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Cart , CartProduct]) , ProductModule],
+  imports:[TypeOrmModule.forFeature([Cart , CartProduct]) , forwardRef(()=>ProductModule)],
   providers: [
     CartService ,
     {provide:ICartRepoToken , useClass:CartRepository},
     {provide:ICartProductRepoToken , useClass:CartProductsRepository},
     CartProductService,
   ],
-  controllers: [CartController]
+  controllers: [CartController],
+  exports:[
+    {provide:ICartProductRepoToken , useClass:CartProductsRepository},
+    CartProductService,
+  ],
+
 })
 export class CartModule {}
