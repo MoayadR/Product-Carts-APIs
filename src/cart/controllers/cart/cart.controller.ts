@@ -1,5 +1,6 @@
-import { BadRequestException, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Post, } from '@nestjs/common';
 import { shippingFee, taxRate } from 'src/cart/constants/taxes';
+import { QuantityDto } from 'src/cart/dtos/quantity.dto';
 import { CartProductService } from 'src/cart/services/cart-product/cart-product.service';
 import { CartService } from 'src/cart/services/cart/cart.service';
 import { ProductService } from 'src/product/services/product/product.service';
@@ -25,9 +26,9 @@ export class CartController {
         return await this.cartService.find();
     }
 
-    @Post('products/:productID?')
-    async addProductToCart(@Param('productID' , ParseIntPipe) productID:number , @Query('quantity' , ParseIntPipe) quantity){
-        if (quantity <=0) throw new BadRequestException("Quantity cannot be less than or equal to zero");
+    @Post('products/:productID')
+    async addProductToCart(@Param('productID' , ParseIntPipe) productID:number , @Body() quantityDto:QuantityDto){
+        if (quantityDto.quantity <=0) throw new BadRequestException("Quantity cannot be less than or equal to zero");
 
         const cartList = await this.cartService.find(); // getting the only cart 
         if(!cartList.length) throw new NotFoundException("The Cart Doesn't Exist!");
@@ -39,7 +40,7 @@ export class CartController {
         // if the product is already in the cart then just modify the quantity
         const existingCartProduct = cartItems.find((p) => p.id == productID);
         if (existingCartProduct){
-            existingCartProduct.quantity += quantity;
+            existingCartProduct.quantity += quantityDto.quantity;
             await this.cartProductService.update(existingCartProduct);
             return await this.cartProductService.findAllByCart(cart);
         }
@@ -47,14 +48,14 @@ export class CartController {
         const product = await this.productService.findOne(productID);
         if(!product) throw new NotFoundException("The Product Doesn't Exist!");
 
-        await this.cartProductService.create(product , cart , quantity);
+        await this.cartProductService.create(product , cart , quantityDto.quantity);
 
         return await this.cartProductService.findAllByCartJoinProduct(cart);
     }
 
-    @Post('products/:productID?')
-    async updateProductQuantity(@Param('productID' , ParseIntPipe) productID:number , @Query('quantity' , ParseIntPipe) quantity){
-        if (quantity <=0) throw new BadRequestException("Quantity cannot be less than or equal to zero");
+    @Post('products/:productID')
+    async updateProductQuantity(@Param('productID' , ParseIntPipe) productID:number , @Body() quantityDto:QuantityDto){
+        if (quantityDto.quantity <=0) throw new BadRequestException("Quantity cannot be less than or equal to zero");
 
         const cartList = await this.cartService.find(); // getting the only cart 
         if(!cartList.length) throw new NotFoundException("The Cart Doesn't Exist!");
@@ -66,7 +67,7 @@ export class CartController {
         const existingCartProduct = cartItems.find((p) => p.id == productID);
         if(!existingCartProduct) throw new NotFoundException("The Product is not in the Cart!");
 
-        existingCartProduct.quantity = quantity; // here it's and update not addition
+        existingCartProduct.quantity = quantityDto.quantity; // here it's and update not addition
         await this.cartProductService.update(existingCartProduct);
 
         return await this.cartProductService.findAllByCartJoinProduct(cart);
