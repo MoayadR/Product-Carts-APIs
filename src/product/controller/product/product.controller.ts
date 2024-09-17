@@ -1,14 +1,12 @@
 import { BadRequestException, Body, Controller, Delete, FileTypeValidator, Get, HttpStatus, MaxFileSizeValidator, NotFoundException, Param, ParseFilePipe, ParseFilePipeBuilder, ParseIntPipe, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductDto } from 'src/product/dtos/product.dto';
-import { ProductValidator } from 'src/product/dtos/productValidator';
 import { ProductService } from 'src/product/services/product/product.service';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid'; // for unique file naming
 import * as path from 'path';
-import { imageEndpoint } from 'src/product/constants/image';
-
-const IMAGE_MAX_SIZE = 4 * 1024 * 1024;
+import { IMAGE_MAX_SIZE, imageEndpoint } from 'src/product/constants/image';
+import { ProductValidator } from 'src/product/validators/productValidator';
 
 @Controller('products')
 export class ProductController {
@@ -105,10 +103,7 @@ export class ProductController {
         if (!productValidator.isValid())
             throw new BadRequestException();
 
-        console.log(productValidator);
-        
         this.productService.setProduct(product , productValidator);
-        console.log(product);
 
         return await this.productService.update(product);
     }

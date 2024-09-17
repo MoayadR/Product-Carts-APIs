@@ -1,6 +1,6 @@
 import { DeleteResult } from "typeorm";
 import { Product } from "../entities/product.entity";
-import { ProductValidator } from "../dtos/productValidator";
+import { ProductValidator } from "../validators/productValidator";
 
 export const IProductRepoToken = Symbol("IProductRepoToken");
 

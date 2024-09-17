@@ -2,7 +2,7 @@ import { DeleteResult, Repository } from "typeorm";
 import { Product } from "../entities/product.entity";
 import { IProductRepo } from "../interfaces/product.interface";
 import { InjectRepository } from "@nestjs/typeorm";
-import { ProductValidator } from "../dtos/productValidator";
+import { ProductValidator } from 'src/product/validators/productValidator';
 
 export class ProductRepository implements IProductRepo{
     constructor(

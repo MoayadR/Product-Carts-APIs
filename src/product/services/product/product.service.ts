@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ProductValidator } from 'src/product/dtos/productValidator';
 import { Product } from 'src/product/entities/product.entity';
 import { IProductRepo, IProductRepoToken } from 'src/product/interfaces/product.interface';
+import { ProductValidator } from 'src/product/validators/productValidator';
 
 @Injectable()
 export class ProductService {

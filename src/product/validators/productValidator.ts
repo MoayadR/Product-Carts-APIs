@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber, IsPositive, IsString } from "class-validator"
-import { ProductDto } from "./product.dto"
+import { ProductDto } from "../dtos/product.dto";
 
 
 export class ProductValidator{
