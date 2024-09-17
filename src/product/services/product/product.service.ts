@@ -9,8 +9,8 @@ export class ProductService {
         @Inject(IProductRepoToken) private readonly productRepository:IProductRepo,
     ){}
 
-    create(productDto:ProductValidator , imageURL:string){
-        return this.productRepository.create(productDto , imageURL);
+    create(productDto:ProductValidator){
+        return this.productRepository.create(productDto);
     }
 
     update(product:Product){

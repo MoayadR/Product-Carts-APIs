@@ -9,9 +9,8 @@ export class ProductRepository implements IProductRepo{
         @InjectRepository(Product) private readonly productRepository:Repository<Product>
     ){}
 
-    create(productDto: ProductValidator, imageURL: string): Promise<Product> {
+    create(productDto: ProductValidator): Promise<Product> {
         const product = this.productRepository.create(productDto);
-        product.image = imageURL;
         return this.productRepository.save(product);
     }
 

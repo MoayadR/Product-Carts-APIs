@@ -3,10 +3,11 @@ import { ProductDto } from "./product.dto"
 
 
 export class ProductValidator{
-    constructor(productDto:ProductDto){
+    constructor(productDto:ProductDto , imageURL:string){
         this.name = productDto.name;
         this.price = Number(productDto.price);
         this.quantity = Number(productDto.quantity);
+        this.image = imageURL;
         
         if (productDto.salePrice)
             this.salePrice = Number(productDto.salePrice);
@@ -23,6 +24,10 @@ export class ProductValidator{
     @IsNotEmpty()
     @IsNumber()
     quantity:number
+
+    @IsNotEmpty()
+    @IsString()
+    image:string
 
     salePrice?:number|null
 }

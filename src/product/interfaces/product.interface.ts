@@ -5,7 +5,7 @@ import { ProductValidator } from "../dtos/productValidator";
 export const IProductRepoToken = Symbol("IProductRepoToken");
 
 export interface IProductRepo{
-    create(productDto:ProductValidator , imageURL:string):Promise<Product>
+    create(productDto:ProductValidator):Promise<Product>
 
     delete(product:Product):Promise<DeleteResult>
 
