@@ -24,4 +24,16 @@ export class ProductService {
     findOne(id:number){
         return this.productRepository.findOne(id);
     }
+
+    delete(id:number){
+        return this.productRepository.delete(id);
+    }
+
+    setProduct(product:Product , productValidator:ProductValidator){
+        product.image = productValidator.image;
+        product.name = productValidator.name;
+        product.price = productValidator.price;
+        product.quantity = productValidator.quantity;
+        product.salePrice = productValidator.salePrice
+    }
 }

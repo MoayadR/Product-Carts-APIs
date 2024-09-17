@@ -7,13 +7,14 @@ import { Product } from './product/entities/product.entity';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { CartModule } from './cart/cart.module';
+import { Cart } from './cart/entities/cart.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type:'sqlite',
       database:`${__dirname}/../database/products_carts.db`,
-      entities:[Product],
+      entities:[Product, Cart],
       synchronize:true,
     }),
     ServeStaticModule.forRoot({

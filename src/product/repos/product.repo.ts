@@ -14,8 +14,8 @@ export class ProductRepository implements IProductRepo{
         return this.productRepository.save(product);
     }
 
-    delete(product: Product): Promise<DeleteResult> {
-        return this.productRepository.delete(product);
+    delete(id:number): Promise<DeleteResult> {
+        return this.productRepository.delete(id);
     }
 
     find(): Promise<Product[]> {

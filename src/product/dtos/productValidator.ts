@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator"
+import { IsNotEmpty, IsNumber, IsPositive, IsString } from "class-validator"
 import { ProductDto } from "./product.dto"
 
 
@@ -10,7 +10,21 @@ export class ProductValidator{
         this.image = imageURL;
         
         if (productDto.salePrice)
+        {
             this.salePrice = Number(productDto.salePrice);
+        }
+        else{
+            this.salePrice = null;
+        }
+    }
+
+    isValid(){
+        if (this.price < 0 || this.quantity < 0)
+            return false;
+        if (this.salePrice && this.salePrice < 0)
+            return false;
+
+        return true;
     }
 
     @IsNotEmpty()
@@ -19,10 +33,12 @@ export class ProductValidator{
 
     @IsNotEmpty()
     @IsNumber()
+    @IsPositive()
     price:number
 
     @IsNotEmpty()
     @IsNumber()
+    @IsPositive()
     quantity:number
 
     @IsNotEmpty()

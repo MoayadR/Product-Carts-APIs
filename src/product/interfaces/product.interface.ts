@@ -7,7 +7,7 @@ export const IProductRepoToken = Symbol("IProductRepoToken");
 export interface IProductRepo{
     create(productDto:ProductValidator):Promise<Product>
 
-    delete(product:Product):Promise<DeleteResult>
+    delete(id:number):Promise<DeleteResult>
 
     find():Promise<Product[]>
 
