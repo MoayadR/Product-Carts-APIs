@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, FileTypeValidator, Get, HttpStatus, MaxFileSizeValidator, NotFoundException, Param, ParseFilePipe, ParseFilePipeBuilder, ParseIntPipe, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, FileTypeValidator, Get, HttpStatus, MaxFileSizeValidator, NotFoundException, Param, ParseFilePipe, ParseFilePipeBuilder, ParseIntPipe, Post, Put , UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductDto } from 'src/product/dtos/product.dto';
 import { ProductService } from 'src/product/services/product/product.service';
@@ -26,19 +26,13 @@ export class ProductController {
         callback(null, fileName); // Save file with this name
       },
     }),
-    fileFilter: (req, file, callback) => {
-      if (!file.mimetype.match(/\/(jpg|jpeg|png)$/)) { // Accept only JPEG and PNG files
-        return callback(new Error('Only image files are allowed!'), false);
-      }
-      callback(null, true);
-    }
   }))
     async create(@Body() productDto:ProductDto , @UploadedFile(
         new ParseFilePipeBuilder()
-        .addFileTypeValidator({ fileType: 'image/jpeg' })
+        .addFileTypeValidator({ fileType: /image\/(jpeg|png)/ })
         .addMaxSizeValidator({maxSize: IMAGE_MAX_SIZE})
         .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
-    ) imageFile:Express.Multer.File){
+        ) imageFile:Express.Multer.File){
 
 
         const imageURL = `${imageEndpoint}uploads/${imageFile.filename}`;
@@ -68,12 +62,6 @@ export class ProductController {
         callback(null, fileName); // Save file with this name
       },
     }),
-    fileFilter: (req, file, callback) => {
-      if (!file.mimetype.match(/\/(jpg|jpeg|png)$/)) { // Accept only JPEG and PNG files
-        return callback(new Error('Only image files are allowed!'), false);
-      }
-      callback(null, true);
-    }
   }))
     async update(@Param('id', ParseIntPipe) id:number , @Body() productDto:ProductDto , @UploadedFile(
         new ParseFilePipe({
@@ -82,7 +70,7 @@ export class ProductController {
                 maxSize: IMAGE_MAX_SIZE
                 }),
                 new FileTypeValidator({
-                fileType: 'image/jpeg' 
+                fileType: /image\/(jpeg|png)/
                 })
             ]
             ,
